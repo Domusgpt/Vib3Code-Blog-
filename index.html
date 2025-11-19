@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vib3 Code | AI & Visual Engineering</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=DM+Sans:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+      
+      :root {
+        --aqua-bright: #4FC3F7;
+        --aqua-soft: #80DEEA;
+        --teal: #26A69A;
+        --purple: #7B3FF2;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #020617;
+        color: white;
+        font-family: 'Inter', sans-serif;
+        overflow: hidden; /* Disable global scroll */
+        height: 100vh;
+        width: 100vw;
+      }
+
+      h1, h2, h3, h4, h5, h6 {
+        font-family: 'DM Sans', sans-serif;
+      }
+      
+      .font-mono {
+        font-family: 'JetBrains Mono', monospace;
+      }
+
+      canvas {
+        display: block;
+      }
+
+      /* 3D Utilities */
+      .preserve-3d {
+        transform-style: preserve-3d;
+      }
+      .backface-hidden {
+        backface-visibility: hidden;
+      }
+      .perspective-1000 {
+        perspective: 1000px;
+      }
+      .perspective-2000 {
+        perspective: 2000px;
+      }
+
+      /* Custom Scrollbar */
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(79, 195, 247, 0.3);
+      }
+
+      /* --- VAPORWAVE / GLITCH FX --- */
+
+      /* CRT Scanlines */
+      .scanlines {
+        background: linear-gradient(
+          to bottom,
+          rgba(255,255,255,0),
+          rgba(255,255,255,0) 50%,
+          rgba(0,0,0,0.2) 50%,
+          rgba(0,0,0,0.2)
+        );
+        background-size: 100% 4px;
+        animation: scanlineMove 0.4s linear infinite;
+        pointer-events: none;
+        z-index: 9999;
+      }
+      @keyframes scanlineMove {
+        0% { background-position: 0 0; }
+        100% { background-position: 0 4px; }
+      }
+
+      /* Moiré Pattern */
+      .moire-grid {
+        background-image: radial-gradient(circle, transparent 20%, #000 20%, #000 80%, transparent 80%, transparent);
+        background-size: 10px 10px;
+        opacity: 0.1;
+      }
+
+      /* RGB Shift Animation */
+      @keyframes rgbShift {
+        0% { text-shadow: -2px 0 #0ff, 2px 0 #f00; }
+        25% { text-shadow: -2px -2px #0ff, 2px 2px #f00; }
+        50% { text-shadow: -1px 2px #0ff, 1px -2px #f00; }
+        75% { text-shadow: 1px -1px #0ff, -1px 1px #f00; }
+        100% { text-shadow: -2px 0 #0ff, 2px 0 #f00; }
+      }
+      .animate-rgb {
+        animation: rgbShift 0.2s infinite;
+      }
+
+      /* Liquid Morphing Card */
+      .liquid-card {
+        border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+        transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(12px);
+      }
+      .liquid-card:hover {
+        border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%;
+        transform: scale(1.02);
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(79, 195, 247, 0.4);
+        box-shadow: 0 10px 40px rgba(79, 195, 247, 0.15);
+      }
+
+      /* Glitch Overlay Blend Mode */
+      .blend-exclusion {
+        mix-blend-mode: exclusion;
+      }
+      .blend-hard-light {
+        mix-blend-mode: hard-light;
+      }
+
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "react/": "https://aistudiocdn.com/react@^19.2.0/",
+          "react": "https://aistudiocdn.com/react@^19.2.0",
+          "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+          "gsap/": "https://aistudiocdn.com/gsap@^3.13.0/",
+          "gsap": "https://aistudiocdn.com/gsap@^3.13.0",
+          "gsap/ScrollTrigger": "https://aistudiocdn.com/gsap@^3.13.0/ScrollTrigger"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
