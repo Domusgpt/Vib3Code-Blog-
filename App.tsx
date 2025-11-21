@@ -1,11 +1,10 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import VisualizerCanvas, { VisualizerRef } from './components/VisualizerCanvas';
-import RevolverNav from './components/RevolverNav';
+import MultilayerVisualizer, { MultilayerVisualizerRef } from './components/MultilayerVisualizer';
+import SectionNavigator from './components/SectionNavigator';
 import GlitchOverlay from './components/ui/GlitchOverlay';
-import GestureHandler from './components/ui/GestureHandler'; // New Import
-import { VISUALIZER_PROFILES } from './constants';
+import { SECTION_PRESETS, getPresetBySection } from './constants/shaderPresets';
 
 // Section Imports
 import HeroSection from './components/sections/HeroSection';
@@ -24,42 +23,38 @@ const SECTIONS_COMPONENTS = [
     ContactSection
 ];
 
-const THEME_KEYS = Object.keys(VISUALIZER_PROFILES) as (keyof typeof VISUALIZER_PROFILES)[];
-
 const App: React.FC = () => {
-    const visualizerRef = useRef<VisualizerRef>(null);
+    const visualizerRef = useRef<MultilayerVisualizerRef>(null);
     const [activeSection, setActiveSection] = useState(0);
     const [isGlitching, setIsGlitching] = useState(false);
     const sectionContainerRef = useRef<HTMLDivElement>(null);
-    const activeTheme = VISUALIZER_PROFILES[THEME_KEYS[activeSection]];
+    const activePreset = getPresetBySection(activeSection);
 
-    // The "Big Switch" Logic
+    // Handle section changes
     const handleSectionChange = (index: number) => {
         if (index === activeSection || isGlitching) return;
-        
+
         setIsGlitching(true);
-        
-        // 1. Trigger Visual Spike
-        visualizerRef.current?.triggerBurst();
+
+        // 1. Trigger Visual Pulse
+        visualizerRef.current?.triggerPulse();
 
         // 2. Content Switch with Glitch Timing
         setTimeout(() => {
             setActiveSection(index);
-            
-            // Update Theme in background while glitch covers it
-            const sectionKey = THEME_KEYS[index];
-            const targetTheme = VISUALIZER_PROFILES[sectionKey];
-            
-            // @ts-ignore
-            visualizerRef.current?.updateParams({ 
-                ...targetTheme,
-                patternIntensity: 1.5 // Start intense
+
+            // Update shader params for new section
+            const targetPreset = getPresetBySection(index);
+            visualizerRef.current?.updateParams({
+                ...targetPreset.shaderParams,
+                u_intensity: (targetPreset.shaderParams.u_intensity || 1.0) * 1.5 // Spike
             });
 
             // Tween back to normal intensity
             gsap.delayedCall(0.5, () => {
-                // @ts-ignore
-                visualizerRef.current?.updateParams({ patternIntensity: (targetTheme as any).patternIntensity || 1.0 });
+                visualizerRef.current?.updateParams({
+                    u_intensity: targetPreset.shaderParams.u_intensity || 1.0
+                });
             });
 
         }, 200); // Mid-glitch swap
@@ -70,56 +65,65 @@ const App: React.FC = () => {
         }, 800);
     };
 
-    const handleNavigate = (direction: 'next' | 'prev') => {
-        let nextIndex = activeSection;
-        if (direction === 'next') {
-            nextIndex = (activeSection + 1) % SECTIONS_COMPONENTS.length;
-        } else {
-            nextIndex = (activeSection - 1 + SECTIONS_COMPONENTS.length) % SECTIONS_COMPONENTS.length;
-        }
-        handleSectionChange(nextIndex);
-    };
+    // Keyboard navigation
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'ArrowLeft') {
+                const prevIndex = (activeSection - 1 + SECTIONS_COMPONENTS.length) % SECTIONS_COMPONENTS.length;
+                handleSectionChange(prevIndex);
+            } else if (e.key === 'ArrowRight') {
+                const nextIndex = (activeSection + 1) % SECTIONS_COMPONENTS.length;
+                handleSectionChange(nextIndex);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [activeSection]);
 
     const ActiveComponent = SECTIONS_COMPONENTS[activeSection];
 
     return (
         <div className="relative w-screen h-screen overflow-hidden bg-slate-950 text-white">
-            
+
             {/* 1. Glitch Overlay (The "Switch" Effect) */}
             <GlitchOverlay active={isGlitching} />
 
-            {/* 2. VIB34D Background Layer */}
+            {/* 2. Multilayer Holographic Background */}
             <div className="fixed inset-0 z-0 pointer-events-none">
-                <VisualizerCanvas ref={visualizerRef} />
+                <MultilayerVisualizer
+                    ref={visualizerRef}
+                    baseParams={activePreset.shaderParams}
+                />
                 {/* Global Vignette */}
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#020617_120%)] opacity-80" />
-                {/* Vaporwave Grid Floor (Decor) */}
-                <div className="absolute bottom-0 w-full h-[30vh] bg-gradient-to-t from-purple-900/20 to-transparent pointer-events-none mix-blend-screen" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#020617_120%)] opacity-60" />
+                {/* Cyber Grid Floor */}
+                <div className="absolute bottom-0 w-full h-[30vh] cyber-grid opacity-10 pointer-events-none" />
             </div>
 
-            {/* 3. Gesture Controller (Drag to Navigate) */}
-            <GestureHandler 
-                visualizerRef={visualizerRef} 
-                onNavigate={handleNavigate} 
-                baseParams={activeTheme} 
+            {/* 3. Section Navigator */}
+            <SectionNavigator
+                sections={SECTION_PRESETS}
+                activeSection={activeSection}
+                onSectionChange={handleSectionChange}
             />
 
-            {/* 4. Top-mounted Revolver Bezel (Hidden by default, scroll up to reveal) */}
-            <RevolverNav activeIndex={activeSection} onSectionSelect={handleSectionChange} />
-
-            {/* 5. Active Section Container */}
-            <main 
+            {/* 4. Active Section Container */}
+            <main
                 ref={sectionContainerRef}
                 className={`relative z-10 w-full h-full transition-opacity duration-100 ${isGlitching ? 'opacity-0' : 'opacity-100'}`}
             >
-                <ActiveComponent visualizerRef={visualizerRef} />
+                <ActiveComponent visualizerRef={visualizerRef} activePreset={activePreset} />
             </main>
 
             {/* Footer / Status */}
-            <div className="fixed bottom-6 right-8 z-50 text-xs font-mono text-cyan-400/30 tracking-widest pointer-events-none flex flex-col items-end">
-                <span>VIB34D SYSTEM v1.4</span>
-                <span>MODE: {THEME_KEYS[activeSection].toUpperCase()}</span>
-                <span className="mt-2 opacity-50 hidden md:block">&lt; DRAG SIDES TO NAVIGATE &gt;</span>
+            <div className="fixed bottom-6 left-8 z-50 text-xs font-mono text-cyan-400/30 tracking-widest pointer-events-none flex flex-col items-start">
+                <span>VIB3+ MULTILAYER v2.0</span>
+                <span>GEOMETRY: {activePreset.shaderParams.u_geometryType}</span>
+                <span className="text-white/20">|</span>
+                <span style={{ color: activePreset.color }} className="opacity-70">
+                    {activePreset.title.toUpperCase()}
+                </span>
             </div>
         </div>
     );
