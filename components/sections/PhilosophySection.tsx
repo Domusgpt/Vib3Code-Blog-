@@ -1,6 +1,6 @@
 import React from 'react';
 import { MultilayerVisualizerRef } from '../MultilayerVisualizer';
-import EnhancedArticleCard from '../EnhancedArticleCard';
+import VisualCodexCard from '../VisualCodexCard';
 import { BLOG_CONTENT } from '../../constants';
 import { SectionPreset } from '../../constants/shaderPresets';
 
@@ -39,9 +39,9 @@ const PhilosophySection: React.FC<SectionProps> = ({ visualizerRef, activePreset
             </div>
 
             {/* Articles Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto pb-24">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto pb-24">
                 {articles.map((article, i) => (
-                    <EnhancedArticleCard
+                    <VisualCodexCard
                         key={i}
                         article={article}
                         index={i}

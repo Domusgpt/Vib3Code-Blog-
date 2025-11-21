@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import MultilayerVisualizer, { MultilayerVisualizerRef } from './components/MultilayerVisualizer';
-import SectionNavigator from './components/SectionNavigator';
+import HexagonalRevolver from './components/HexagonalRevolver';
 import GlitchOverlay from './components/ui/GlitchOverlay';
 import { SECTION_PRESETS, getPresetBySection } from './constants/shaderPresets';
 
@@ -101,8 +101,8 @@ const App: React.FC = () => {
                 <div className="absolute bottom-0 w-full h-[30vh] cyber-grid opacity-10 pointer-events-none" />
             </div>
 
-            {/* 3. Section Navigator */}
-            <SectionNavigator
+            {/* 3. Hexagonal Revolver Navigation */}
+            <HexagonalRevolver
                 sections={SECTION_PRESETS}
                 activeSection={activeSection}
                 onSectionChange={handleSectionChange}
