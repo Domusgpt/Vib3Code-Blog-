@@ -1,6 +1,7 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import CircularRevolver from './components/CircularRevolver';
+import MultilayerVisualizer, { MultilayerVisualizerRef } from './components/MultilayerVisualizer';
 import { SECTION_PRESETS } from './constants/shaderPresets';
 
 // Section Imports
@@ -23,6 +24,14 @@ const SECTIONS_COMPONENTS = [
 const App: React.FC = () => {
     const [activeSection, setActiveSection] = useState(0);
     const activePreset = SECTION_PRESETS[activeSection];
+    const visualizerRef = useRef<MultilayerVisualizerRef>(null);
+
+    // Update visualizer when section changes
+    useEffect(() => {
+        if (visualizerRef.current && activePreset) {
+            visualizerRef.current.updateParams(activePreset.shaderParams);
+        }
+    }, [activePreset]);
 
     // Keyboard navigation
     useEffect(() => {
@@ -44,33 +53,13 @@ const App: React.FC = () => {
 
     return (
         <div className="relative w-screen h-screen overflow-hidden bg-[#0a0a0a] text-white">
-            {/* Animated Background */}
+            {/* Multilayer Visualizer Background */}
             <div className="fixed inset-0 z-0">
-                {/* Gradient Orbs */}
-                <div
-                    className="absolute top-0 left-0 w-[800px] h-[800px] rounded-full blur-[128px] opacity-20 animate-float-slow"
-                    style={{ background: activePreset.color }}
+                <MultilayerVisualizer
+                    ref={visualizerRef}
+                    baseParams={activePreset.shaderParams}
                 />
-                <div
-                    className="absolute bottom-0 right-0 w-[600px] h-[600px] rounded-full blur-[128px] opacity-15 animate-float-slower"
-                    style={{ background: `linear-gradient(135deg, ${activePreset.color}, transparent)` }}
-                />
-                <div
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full blur-[96px] opacity-10 animate-pulse-slow"
-                    style={{ background: activePreset.color }}
-                />
-
-                {/* Noise Texture */}
-                <div
-                    className="absolute inset-0 opacity-[0.03] mix-blend-overlay"
-                    style={{
-                        backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' /%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\'/%3E%3C/svg%3E")',
-                        backgroundSize: '128px'
-                    }}
-                />
-
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/50" />
             </div>
 
             {/* Circular Revolver Navigation */}
@@ -92,30 +81,6 @@ const App: React.FC = () => {
                     {activePreset.title.toUpperCase()}
                 </div>
             </div>
-
-            <style>{`
-                @keyframes float-slow {
-                    0%, 100% { transform: translate(0, 0); }
-                    50% { transform: translate(-50px, -80px); }
-                }
-                @keyframes float-slower {
-                    0%, 100% { transform: translate(0, 0); }
-                    50% { transform: translate(40px, 60px); }
-                }
-                @keyframes pulse-slow {
-                    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.1; }
-                    50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.15; }
-                }
-                .animate-float-slow {
-                    animation: float-slow 20s ease-in-out infinite;
-                }
-                .animate-float-slower {
-                    animation: float-slower 25s ease-in-out infinite;
-                }
-                .animate-pulse-slow {
-                    animation: pulse-slow 15s ease-in-out infinite;
-                }
-            `}</style>
         </div>
     );
 };

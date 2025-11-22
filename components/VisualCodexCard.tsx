@@ -109,8 +109,11 @@ const VisualCodexCard: React.FC<VisualCodexCardProps> = ({
             {/* Backdrop */}
             <div
                 ref={overlayRef}
-                className="fixed inset-0 bg-black/90 backdrop-blur-xl z-[999] opacity-0 pointer-events-none"
-                style={{ display: isExpanded ? 'block' : 'none' }}
+                className="fixed inset-0 bg-black/90 backdrop-blur-xl z-[999] opacity-0"
+                style={{
+                    display: isExpanded ? 'block' : 'none',
+                    pointerEvents: isExpanded ? 'auto' : 'none'
+                }}
                 onClick={handleCollapse}
             />
 
