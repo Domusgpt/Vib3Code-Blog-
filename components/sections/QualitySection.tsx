@@ -1,72 +1,58 @@
-
-import React, { useEffect, useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { VisualizerRef } from '../VisualizerCanvas';
+import React from 'react';
+import VisualCodexCard from '../VisualCodexCard';
 import { BLOG_CONTENT } from '../../constants';
-
-gsap.registerPlugin(ScrollTrigger);
+import { SectionPreset } from '../../constants/shaderPresets';
 
 interface SectionProps {
-    visualizerRef: React.RefObject<VisualizerRef | null>;
+    activePreset: SectionPreset;
 }
 
-const QualitySection: React.FC<SectionProps> = ({ visualizerRef }) => {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const cardsRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        if (!containerRef.current || !cardsRef.current) return;
-        const container = containerRef.current;
-
-        // Visualizer Choreography - Hypercube distortion/glitch
-        ScrollTrigger.create({
-            trigger: cardsRef.current,
-            scroller: container,
-            start: "top center",
-            end: "bottom center",
-            scrub: 1,
-            onUpdate: (self) => {
-                visualizerRef.current?.updateParams({
-                    glitchIntensity: self.progress * 0.05, // Introduce slight glitch
-                    gridDensity: 28 + (self.progress * 10),
-                    rotationSpeed: 1.5 + (Math.sin(self.progress * Math.PI) * 0.5)
-                });
-            }
-        });
-
-    }, []);
+const QualitySection: React.FC<SectionProps> = ({ activePreset }) => {
+    const articles = BLOG_CONTENT.quality.map((item, i) => ({
+        ...item,
+        icon: activePreset.icon,
+        category: item.category || 'DEEP DIVE',
+        date: `${8 + i} min read`,
+        tags: ['Tutorial', 'Deep Dive', 'Architecture', 'Performance']
+    }));
 
     return (
-        <div ref={containerRef} className="w-full h-full overflow-y-auto custom-scrollbar relative">
-            <div className="min-h-[130vh] w-full flex flex-col items-center pt-32 pb-32 px-4">
-                
-                <h2 className="text-5xl md:text-7xl font-bold mb-6 text-center">
-                    Deep <span className="text-cyan-400">Dives</span>
-                </h2>
-                <p className="text-xl text-slate-400 mb-20 text-center max-w-xl">
-                    Technical case studies and architectural breakdowns.
-                </p>
-
-                <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl w-full">
-                    {BLOG_CONTENT.quality.map((post, i) => (
-                        <div key={i} className="liquid-card p-8 flex flex-col items-start justify-start text-left group relative overflow-hidden min-h-[320px] cursor-pointer">
-                            
-                            <div className="absolute top-4 right-4 text-xs font-mono px-2 py-1 rounded border border-white/10 text-white/50 group-hover:border-cyan-400/50 group-hover:text-cyan-400 transition-colors">
-                                {post.category}
-                            </div>
-
-                            <h3 className="text-3xl font-bold text-white mb-4 relative z-10 group-hover:text-cyan-300 transition-colors">{post.title}</h3>
-                            <p className="text-slate-300 leading-relaxed relative z-10 mb-6">{post.desc}</p>
-                            
-                            <div className="mt-auto relative z-10 w-full pt-4 border-t border-white/10 flex justify-between items-center opacity-60 group-hover:opacity-100 transition-opacity">
-                                <span className="text-xs font-mono">EST. READ: 8 MIN</span>
-                                <span className="text-cyan-400">Read →</span>
-                            </div>
-                        </div>
-                    ))}
+        <div className="min-h-screen px-8 lg:px-16 py-16">
+            {/* Section Header */}
+            <div className="max-w-7xl mx-auto mb-12">
+                <div className="flex items-center gap-3 mb-4">
+                    <span className="text-4xl" style={{ color: activePreset.color }}>
+                        {activePreset.icon}
+                    </span>
                 </div>
+                <h1
+                    className="text-5xl md:text-6xl font-bold mb-4 tracking-tight"
+                    style={{
+                        background: `linear-gradient(135deg, ${activePreset.color}, white)`,
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text',
+                        fontFamily: 'Syne, DM Sans, sans-serif'
+                    }}
+                >
+                    {activePreset.title}
+                </h1>
+                <p className="text-lg text-slate-200 max-w-3xl leading-relaxed">
+                    {activePreset.description}
+                </p>
+            </div>
 
+            {/* Articles Grid */}
+            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {articles.map((article, i) => (
+                    <VisualCodexCard
+                        key={i}
+                        article={article}
+                        index={i}
+                        accentColor={activePreset.color}
+
+                    />
+                ))}
             </div>
         </div>
     );

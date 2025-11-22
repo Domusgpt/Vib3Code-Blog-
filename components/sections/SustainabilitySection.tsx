@@ -1,70 +1,58 @@
-
-import React, { useEffect, useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { VisualizerRef } from '../VisualizerCanvas';
+import React from 'react';
+import VisualCodexCard from '../VisualCodexCard';
 import { BLOG_CONTENT } from '../../constants';
-
-gsap.registerPlugin(ScrollTrigger);
+import { SectionPreset } from '../../constants/shaderPresets';
 
 interface SectionProps {
-    visualizerRef: React.RefObject<VisualizerRef | null>;
+    activePreset: SectionPreset;
 }
 
-const SustainabilitySection: React.FC<SectionProps> = ({ visualizerRef }) => {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const listRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        if (!containerRef.current || !listRef.current) return;
-        const container = containerRef.current;
-
-        // Visualizer Choreography - Organic, slow, hypersphere
-        ScrollTrigger.create({
-            trigger: listRef.current,
-            scroller: container,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: 1,
-            onUpdate: (self) => {
-                visualizerRef.current?.updateParams({
-                    rotationSpeed: 0.3 + (Math.sin(self.progress * Math.PI * 2) * 0.2), // Ebb and flow
-                    shellWidth: 0.025 + (self.progress * 0.02),
-                    morphFactor: 0.5 + (self.progress * 0.3)
-                });
-            }
-        });
-
-    }, []);
+const SustainabilitySection: React.FC<SectionProps> = ({ activePreset }) => {
+    const articles = BLOG_CONTENT.sustainability.map((item, i) => ({
+        ...item,
+        icon: activePreset.icon,
+        category: 'FUTURE',
+        date: `Signal ${String(i + 1).padStart(2, '0')}`,
+        tags: ['AI', 'Ethics', 'Future', 'Society']
+    }));
 
     return (
-        <div ref={containerRef} className="w-full h-full overflow-y-auto custom-scrollbar relative">
-            <div className="min-h-[120vh] w-full flex flex-col items-center pt-32 pb-32 px-4">
-                
-                <h2 className="text-5xl md:text-6xl font-bold mb-6 text-center">Future Signals</h2>
-                <p className="text-xl text-slate-400 mb-20 text-center max-w-xl">
-                    Weak signals from the edge of tomorrow. Predictions for the post-AGI world.
-                </p>
-
-                <div ref={listRef} className="grid grid-cols-1 gap-6 max-w-4xl w-full">
-                    {BLOG_CONTENT.sustainability.map((topic, i) => (
-                        <div key={i} className="wave-card relative bg-slate-900/50 border border-white/5 rounded-xl p-8 flex flex-col md:flex-row md:items-center gap-6 overflow-hidden group hover:border-cyan-500/30 transition-colors duration-500 cursor-pointer">
-                            
-                            <div className="text-cyan-400 text-4xl opacity-50 group-hover:opacity-100 transition-opacity font-mono">0{i+1}</div>
-                            <div className="flex-grow">
-                                <h3 className="text-2xl font-bold text-white mb-2">{topic.title}</h3>
-                                <p className="text-slate-400">{topic.desc}</p>
-                            </div>
-                            <div className="opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all duration-500 text-cyan-400">
-                                Read →
-                            </div>
-
-                            {/* Wave Reveal Effect Element */}
-                            <div className="absolute inset-0 pointer-events-none animate-wave opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        </div>
-                    ))}
+        <div className="min-h-screen px-8 lg:px-16 py-16">
+            {/* Section Header */}
+            <div className="max-w-7xl mx-auto mb-12">
+                <div className="flex items-center gap-3 mb-4">
+                    <span className="text-4xl" style={{ color: activePreset.color }}>
+                        {activePreset.icon}
+                    </span>
                 </div>
+                <h1
+                    className="text-5xl md:text-6xl font-bold mb-4 tracking-tight"
+                    style={{
+                        background: `linear-gradient(135deg, ${activePreset.color}, white)`,
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text',
+                        fontFamily: 'Syne, DM Sans, sans-serif'
+                    }}
+                >
+                    {activePreset.title}
+                </h1>
+                <p className="text-lg text-slate-200 max-w-3xl leading-relaxed">
+                    {activePreset.description}
+                </p>
+            </div>
 
+            {/* Articles Grid */}
+            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+                {articles.map((article, i) => (
+                    <VisualCodexCard
+                        key={i}
+                        article={article}
+                        index={i}
+                        accentColor={activePreset.color}
+
+                    />
+                ))}
             </div>
         </div>
     );
