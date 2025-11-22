@@ -1,30 +1,51 @@
 import React from 'react';
-import { VisualizerRef } from '../VisualizerCanvas';
-import BlogArticleSection from './BlogArticleSection';
-import { BLOG_CONTENT, VISUALIZER_PROFILES } from '../../constants';
+import ArticleCard from '../ArticleCard';
+import { BLOG_CONTENT } from '../../constants';
+import { SectionPreset } from '../../constants/shaderPresets';
 
 interface SectionProps {
-    visualizerRef: React.RefObject<VisualizerRef | null>;
+    activePreset: SectionPreset;
 }
 
-const QualitySection: React.FC<SectionProps> = ({ visualizerRef }) => {
+const QualitySection: React.FC<SectionProps> = ({ activePreset }) => {
     const articles = BLOG_CONTENT.quality.map((item, i) => ({
         ...item,
-        icon: '✦',
+        category: 'DEEP DIVE',
         date: `${8 + i} min read`,
         tags: ['Tutorial', 'Deep Dive', 'Architecture', 'Performance']
     }));
 
     return (
-        <BlogArticleSection
-            visualizerRef={visualizerRef}
-            sectionTitle="Deep Dives"
-            sectionSubtitle="Technical Case Studies"
-            sectionIcon="✦"
-            articles={articles}
-            accentColor="#FF6D00"
-            visualizerParams={VISUALIZER_PROFILES.quality}
-        />
+        <div className="min-h-screen px-6 md:px-12 py-24">
+            {/* Section Header */}
+            <div className="max-w-7xl mx-auto mb-16">
+                <div className="flex items-center gap-4 mb-6">
+                    <span className="text-6xl" style={{ color: activePreset.color }}>
+                        {activePreset.icon}
+                    </span>
+                </div>
+                <h1
+                    className="text-7xl md:text-8xl font-bold mb-6 tracking-tight"
+                    style={{ color: activePreset.color }}
+                >
+                    {activePreset.title}
+                </h1>
+                <p className="text-xl text-slate-400 max-w-3xl">
+                    {activePreset.description}
+                </p>
+            </div>
+
+            {/* Articles Grid */}
+            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {articles.map((article, i) => (
+                    <ArticleCard
+                        key={i}
+                        article={article}
+                        accentColor={activePreset.color}
+                    />
+                ))}
+            </div>
+        </div>
     );
 };
 
