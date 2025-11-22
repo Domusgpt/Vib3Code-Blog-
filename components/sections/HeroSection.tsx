@@ -57,7 +57,7 @@ const HeroSection: React.FC<SectionProps> = ({ activePreset }) => {
                             }}
                             index={i}
                             accentColor={activePreset.color}
-                            shaderPreset={activePreset.shaderParams}
+
                         />
                     ))}
                 </div>

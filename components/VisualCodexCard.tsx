@@ -1,7 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import gsap from 'gsap';
-import MultilayerVisualizer, { MultilayerVisualizerRef } from './MultilayerVisualizer';
-import { ShaderUniforms } from '../services/vib3-plus/MultilayerHolographicShader';
 
 interface Article {
     title: string;
@@ -17,21 +15,18 @@ interface VisualCodexCardProps {
     article: Article;
     index: number;
     accentColor: string;
-    shaderPreset?: Partial<ShaderUniforms>;
 }
 
 const VisualCodexCard: React.FC<VisualCodexCardProps> = ({
     article,
     index,
-    accentColor,
-    shaderPreset
+    accentColor
 }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const cardRef = useRef<HTMLDivElement>(null);
     const overlayRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
-    const visualizerRef = useRef<MultilayerVisualizerRef>(null);
 
     const handleExpand = () => {
         setIsExpanded(true);
@@ -68,9 +63,6 @@ const VisualCodexCard: React.FC<VisualCodexCardProps> = ({
                 duration: 0.4
             });
         }
-
-        // Pulse visualizer
-        visualizerRef.current?.triggerPulse();
     };
 
     const handleCollapse = (e: React.MouseEvent) => {
@@ -130,7 +122,7 @@ const VisualCodexCard: React.FC<VisualCodexCardProps> = ({
                 onClick={!isExpanded ? handleExpand : undefined}
                 className={`
                     relative rounded-2xl overflow-hidden transition-all duration-500
-                    ${!isExpanded ? 'cursor-pointer' : ''}
+                    ${!isExpanded ? 'cursor-pointer hover:scale-[1.02]' : ''}
                 `}
                 style={{
                     border: `1px solid ${isHovered || isExpanded ? accentColor : 'rgba(255,255,255,0.08)'}`,
@@ -141,17 +133,20 @@ const VisualCodexCard: React.FC<VisualCodexCardProps> = ({
                         : '0 2px 12px rgba(0,0,0,0.4)'
                 }}
             >
-                {/* Visualizer Background */}
-                <div className="absolute inset-0 opacity-15 pointer-events-none">
-                    <MultilayerVisualizer
-                        ref={visualizerRef}
-                        baseParams={{
-                            ...shaderPreset,
-                            u_intensity: isExpanded ? 0.6 : 0.3,
-                            u_gridDensity: isExpanded ? 12.0 : 4.0
-                        }}
-                    />
-                </div>
+                {/* Animated Gradient Background */}
+                <div
+                    className="absolute inset-0 pointer-events-none transition-all duration-1000"
+                    style={{
+                        background: `
+                            radial-gradient(circle at 30% 20%, ${accentColor}${isExpanded ? '50' : '30'} 0%, transparent 50%),
+                            radial-gradient(circle at 70% 80%, ${accentColor}${isExpanded ? '40' : '20'} 0%, transparent 60%),
+                            linear-gradient(135deg, ${accentColor}15, transparent)
+                        `,
+                        opacity: isHovered || isExpanded ? 0.4 : 0.2,
+                        transform: isHovered ? 'scale(1.05)' : 'scale(1)',
+                        animation: isExpanded ? 'pulse 4s ease-in-out infinite' : 'none'
+                    }}
+                />
 
                 {/* Noise Texture Overlay */}
                 <div className="absolute inset-0 opacity-5 pointer-events-none mix-blend-overlay" style={{
@@ -169,7 +164,7 @@ const VisualCodexCard: React.FC<VisualCodexCardProps> = ({
                                 {/* Category Badge */}
                                 {article.category && (
                                     <div
-                                        className="px-3 py-1 rounded-lg text-xs font-mono uppercase tracking-wider border"
+                                        className="px-3 py-1 rounded-lg text-xs font-mono uppercase tracking-wider border font-display"
                                         style={{
                                             color: accentColor,
                                             borderColor: `${accentColor}40`,
@@ -201,7 +196,8 @@ const VisualCodexCard: React.FC<VisualCodexCardProps> = ({
                                     background: `linear-gradient(135deg, ${accentColor}, white)`,
                                     WebkitBackgroundClip: 'text',
                                     WebkitTextFillColor: 'transparent',
-                                    backgroundClip: 'text'
+                                    backgroundClip: 'text',
+                                    fontFamily: 'Syne, DM Sans, sans-serif'
                                 }}
                             >
                                 {article.title}
@@ -222,7 +218,7 @@ const VisualCodexCard: React.FC<VisualCodexCardProps> = ({
 
                                 {/* Expand Button */}
                                 <div
-                                    className="flex items-center gap-2 text-sm font-mono transition-transform duration-300"
+                                    className="flex items-center gap-2 text-sm font-mono transition-transform duration-300 font-display"
                                     style={{
                                         color: accentColor,
                                         transform: isHovered ? 'translateX(4px)' : 'translateX(0)'
@@ -287,7 +283,7 @@ const VisualCodexCard: React.FC<VisualCodexCardProps> = ({
                                     <div className="flex flex-wrap gap-4 mb-6">
                                         {article.category && (
                                             <div
-                                                className="px-4 py-2 rounded-lg font-mono text-sm uppercase tracking-wider border"
+                                                className="px-4 py-2 rounded-lg font-mono text-sm uppercase tracking-wider border font-display"
                                                 style={{
                                                     color: accentColor,
                                                     borderColor: `${accentColor}60`,
@@ -313,7 +309,8 @@ const VisualCodexCard: React.FC<VisualCodexCardProps> = ({
                                             WebkitBackgroundClip: 'text',
                                             WebkitTextFillColor: 'transparent',
                                             backgroundClip: 'text',
-                                            animation: 'gradientShift 4s ease infinite'
+                                            animation: 'gradientShift 4s ease infinite',
+                                            fontFamily: 'Syne, DM Sans, sans-serif'
                                         }}
                                     >
                                         {article.title}
@@ -343,11 +340,11 @@ const VisualCodexCard: React.FC<VisualCodexCardProps> = ({
                                     {/* Body Content */}
                                     <div className="space-y-8 text-lg text-slate-300 leading-relaxed">
                                         <p>
-                                            {article.content || `This article explores the intersection of cutting-edge technology and creative expression. Through the lens of the Visual Codex design system, we examine how form and function converge to create experiences that transcend traditional boundaries.`}
+                                            {article.content || `This article explores the intersection of cutting-edge technology and creative expression. Through elegant design principles, we examine how form and function converge to create experiences that transcend traditional boundaries.`}
                                         </p>
 
                                         <p>
-                                            The multilayer approach to visualization demonstrates how complexity can be managed through elegant abstraction. Each layer serves a distinct purpose while contributing to a harmonious whole—a principle that applies equally to code architecture and visual design.
+                                            The approach demonstrates how complexity can be managed through thoughtful abstraction. Each element serves a distinct purpose while contributing to a harmonious whole—a principle that applies equally to code architecture and visual design.
                                         </p>
 
                                         {/* Callout Box */}
@@ -368,7 +365,7 @@ const VisualCodexCard: React.FC<VisualCodexCardProps> = ({
                                         </div>
 
                                         <p>
-                                            The future belongs to those who can synthesize technical mastery with aesthetic sensibility. The Visual Codex represents this synthesis—a bridge between the analytical and the creative, the systematic and the expressive.
+                                            The future belongs to those who can synthesize technical mastery with aesthetic sensibility. This represents a bridge between the analytical and the creative, the systematic and the expressive.
                                         </p>
 
                                         {/* Tags */}
@@ -377,7 +374,7 @@ const VisualCodexCard: React.FC<VisualCodexCardProps> = ({
                                                 {article.tags.map((tag, i) => (
                                                     <span
                                                         key={i}
-                                                        className="px-4 py-2 text-sm font-mono rounded-full bg-white/5 border border-white/20 text-slate-400 hover:text-cyan-300 hover:border-cyan-400 transition-colors cursor-pointer"
+                                                        className="px-4 py-2 text-sm font-mono rounded-full bg-white/5 border border-white/20 text-slate-400 hover:text-cyan-300 hover:border-cyan-400 transition-colors cursor-pointer font-display"
                                                     >
                                                         #{tag}
                                                     </span>
@@ -390,7 +387,7 @@ const VisualCodexCard: React.FC<VisualCodexCardProps> = ({
                                 {/* Footer Actions */}
                                 <div className="mt-16 pt-12 border-t border-white/10 flex gap-4">
                                     <button
-                                        className="px-8 py-4 rounded-full font-mono text-sm uppercase tracking-wider border-2 transition-all hover:scale-105"
+                                        className="px-8 py-4 rounded-full font-mono text-sm uppercase tracking-wider border-2 transition-all hover:scale-105 font-display"
                                         style={{
                                             borderColor: accentColor,
                                             background: `${accentColor}20`,
@@ -399,7 +396,7 @@ const VisualCodexCard: React.FC<VisualCodexCardProps> = ({
                                     >
                                         Share
                                     </button>
-                                    <button className="px-8 py-4 rounded-full bg-white/5 hover:bg-white/10 border border-white/20 transition-all text-white font-mono text-sm uppercase tracking-wider">
+                                    <button className="px-8 py-4 rounded-full bg-white/5 hover:bg-white/10 border border-white/20 transition-all text-white font-mono text-sm uppercase tracking-wider font-display">
                                         Bookmark
                                     </button>
                                 </div>
@@ -418,6 +415,10 @@ const VisualCodexCard: React.FC<VisualCodexCardProps> = ({
                 @keyframes gradientShift {
                     0%, 100% { background-position: 0% 50%; }
                     50% { background-position: 100% 50%; }
+                }
+                @keyframes pulse {
+                    0%, 100% { opacity: 0.4; transform: scale(1); }
+                    50% { opacity: 0.6; transform: scale(1.02); }
                 }
             `}</style>
         </>

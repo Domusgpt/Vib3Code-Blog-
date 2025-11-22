@@ -44,7 +44,7 @@ const PhilosophySection: React.FC<SectionProps> = ({ activePreset }) => {
                         article={article}
                         index={i}
                         accentColor={activePreset.color}
-                        shaderPreset={activePreset.shaderParams}
+
                     />
                 ))}
             </div>

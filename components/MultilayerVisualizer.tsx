@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useImperativeHandle, forwardRef } from 'react';
+import React, { useRef, useEffect, useImperativeHandle, forwardRef, useState } from 'react';
 import { MultilayerHolographicShader, ShaderUniforms } from '../services/vib3-plus/MultilayerHolographicShader';
 
 interface LayerConfig {
@@ -35,6 +35,8 @@ const MultilayerVisualizer = forwardRef<MultilayerVisualizerRef, MultilayerVisua
         const shadersRef = useRef<(MultilayerHolographicShader | null)[]>([]);
         const animationFrameRef = useRef<number>();
         const startTimeRef = useRef<number>(Date.now());
+        const [webGLSupported, setWebGLSupported] = useState(true);
+        const [failedLayersCount, setFailedLayersCount] = useState(0);
         const paramsRef = useRef<Partial<ShaderUniforms>>({
             u_geometryType: 0,
             u_gridDensity: 5.0,
@@ -78,11 +80,14 @@ const MultilayerVisualizer = forwardRef<MultilayerVisualizerRef, MultilayerVisua
 
             console.log('[MultilayerVisualizer] Initializing with params:', baseParams);
 
+            let failedCount = 0;
+
             // Initialize canvases and shaders for each layer
             LAYER_CONFIGS.forEach((layerConfig, index) => {
                 const canvas = canvasRefs.current[index];
                 if (!canvas) {
                     console.warn(`[MultilayerVisualizer] Canvas ${index} not found`);
+                    failedCount++;
                     return;
                 }
 
@@ -90,11 +95,13 @@ const MultilayerVisualizer = forwardRef<MultilayerVisualizerRef, MultilayerVisua
                     const gl = canvas.getContext('webgl', {
                         alpha: true,
                         premultipliedAlpha: false,
-                        preserveDrawingBuffer: false
+                        preserveDrawingBuffer: false,
+                        failIfMajorPerformanceCaveat: false
                     });
 
                     if (!gl) {
-                        console.error(`[MultilayerVisualizer] WebGL not supported for layer ${layerConfig.role}`);
+                        console.warn(`[MultilayerVisualizer] WebGL not supported for layer ${layerConfig.role} - using CSS fallback`);
+                        failedCount++;
                         return;
                     }
 
@@ -107,9 +114,17 @@ const MultilayerVisualizer = forwardRef<MultilayerVisualizerRef, MultilayerVisua
                     shadersRef.current[index] = new MultilayerHolographicShader(gl);
                     console.log(`[MultilayerVisualizer] Layer ${layerConfig.role} initialized successfully`);
                 } catch (error) {
-                    console.error(`[MultilayerVisualizer] Error initializing layer ${layerConfig.role}:`, error);
+                    console.warn(`[MultilayerVisualizer] Error initializing layer ${layerConfig.role} - using CSS fallback:`, error);
+                    failedCount++;
                 }
             });
+
+            // If all layers failed, use CSS fallback
+            if (failedCount >= LAYER_CONFIGS.length) {
+                console.log('[MultilayerVisualizer] All WebGL layers failed - using CSS gradient fallback');
+                setWebGLSupported(false);
+            }
+            setFailedLayersCount(failedCount);
 
             // Handle mouse movement
             const handleMouseMove = (e: MouseEvent) => {
@@ -199,6 +214,45 @@ const MultilayerVisualizer = forwardRef<MultilayerVisualizerRef, MultilayerVisua
             };
         }, [baseParams]);
 
+        // CSS Fallback when WebGL is not supported
+        if (!webGLSupported || failedLayersCount >= LAYER_CONFIGS.length) {
+            const hue = (baseParams?.u_hue || 0.5) * 360;
+            return (
+                <div ref={containerRef} className={`relative w-full h-full ${className || ''}`}>
+                    {/* Animated gradient fallback */}
+                    <div
+                        className="absolute inset-0 animate-gradient"
+                        style={{
+                            background: `
+                                radial-gradient(ellipse at 20% 30%, hsl(${hue}, 70%, 15%) 0%, transparent 50%),
+                                radial-gradient(ellipse at 80% 70%, hsl(${hue + 60}, 70%, 12%) 0%, transparent 50%),
+                                radial-gradient(ellipse at 50% 50%, hsl(${hue + 120}, 60%, 10%) 0%, transparent 60%),
+                                linear-gradient(135deg, #0a0a0a 0%, hsl(${hue}, 30%, 8%) 100%)
+                            `,
+                            opacity: 0.8
+                        }}
+                    />
+                    {/* Noise overlay */}
+                    <div
+                        className="absolute inset-0 opacity-10 mix-blend-overlay"
+                        style={{
+                            backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' /%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\'/%3E%3C/svg%3E")',
+                            backgroundSize: '128px'
+                        }}
+                    />
+                    <style>{`
+                        @keyframes gradient {
+                            0%, 100% { transform: rotate(0deg) scale(1); }
+                            50% { transform: rotate(180deg) scale(1.1); }
+                        }
+                        .animate-gradient {
+                            animation: gradient 20s ease-in-out infinite;
+                        }
+                    `}</style>
+                </div>
+            );
+        }
+
         return (
             <div ref={containerRef} className={`relative w-full h-full ${className || ''}`}>
                 {LAYER_CONFIGS.map((layerConfig, index) => (
@@ -209,7 +263,8 @@ const MultilayerVisualizer = forwardRef<MultilayerVisualizerRef, MultilayerVisua
                         style={{
                             zIndex: layerConfig.zIndex,
                             opacity: layerConfig.opacity,
-                            mixBlendMode: layerConfig.role === 'accent' ? 'screen' : 'normal'
+                            mixBlendMode: layerConfig.role === 'accent' ? 'screen' : 'normal',
+                            display: webGLSupported ? 'block' : 'none'
                         }}
                     />
                 ))}
