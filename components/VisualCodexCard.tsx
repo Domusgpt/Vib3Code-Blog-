@@ -124,29 +124,29 @@ const VisualCodexCard: React.FC<VisualCodexCardProps> = ({
                 onMouseLeave={() => setIsHovered(false)}
                 onClick={!isExpanded ? handleExpand : undefined}
                 className={`
-                    relative rounded-2xl overflow-hidden transition-all duration-500
-                    ${!isExpanded ? 'cursor-pointer hover:scale-[1.02]' : ''}
+                    relative rounded-xl overflow-hidden transition-all duration-500
+                    ${!isExpanded ? 'cursor-pointer hover:scale-[1.01]' : ''}
                 `}
                 style={{
-                    border: `1px solid ${isHovered || isExpanded ? accentColor : 'rgba(255,255,255,0.08)'}`,
+                    border: `1px solid ${isHovered || isExpanded ? accentColor + '80' : accentColor + '30'}`,
                     boxShadow: isExpanded
-                        ? `0 0 80px ${accentColor}40, inset 0 0 60px rgba(0,0,0,0.8)`
+                        ? `0 0 80px ${accentColor}50, inset 0 0 60px rgba(0,0,0,0.8)`
                         : isHovered
-                        ? `0 0 30px ${accentColor}30`
-                        : '0 2px 12px rgba(0,0,0,0.4)'
+                        ? `0 0 40px ${accentColor}40, 0 8px 24px rgba(0,0,0,0.6)`
+                        : `0 4px 16px rgba(0,0,0,0.5), 0 0 0 1px ${accentColor}20`
                 }}
             >
                 {/* Animated Gradient Background */}
                 <div
-                    className="absolute inset-0 pointer-events-none transition-all duration-1000"
+                    className="absolute inset-0 pointer-events-none transition-all duration-700"
                     style={{
                         background: `
-                            radial-gradient(circle at 30% 20%, ${accentColor}${isExpanded ? '50' : '30'} 0%, transparent 50%),
-                            radial-gradient(circle at 70% 80%, ${accentColor}${isExpanded ? '40' : '20'} 0%, transparent 60%),
-                            linear-gradient(135deg, ${accentColor}15, transparent)
+                            radial-gradient(circle at 30% 20%, ${accentColor}${isExpanded ? '60' : '40'} 0%, transparent 60%),
+                            radial-gradient(circle at 70% 80%, ${accentColor}${isExpanded ? '50' : '30'} 0%, transparent 70%),
+                            linear-gradient(135deg, ${accentColor}20, transparent)
                         `,
-                        opacity: isHovered || isExpanded ? 0.4 : 0.2,
-                        transform: isHovered ? 'scale(1.05)' : 'scale(1)',
+                        opacity: isHovered || isExpanded ? 0.6 : 0.4,
+                        transform: isHovered ? 'scale(1.03)' : 'scale(1)',
                         animation: isExpanded ? 'pulse 4s ease-in-out infinite' : 'none'
                     }}
                 />
@@ -160,43 +160,26 @@ const VisualCodexCard: React.FC<VisualCodexCardProps> = ({
                 {/* Content */}
                 <div className="relative z-10 backdrop-blur-sm">
                     {!isExpanded ? (
-                        /* Compact View */
-                        <div className="p-8 bg-gradient-to-br from-black/80 via-black/60 to-black/80">
-                            {/* Header Bar */}
-                            <div className="flex items-center justify-between mb-6">
-                                {/* Category Badge */}
-                                {article.category && (
-                                    <div
-                                        className="px-3 py-1 rounded-lg text-xs font-mono uppercase tracking-wider border font-display"
-                                        style={{
-                                            color: accentColor,
-                                            borderColor: `${accentColor}40`,
-                                            background: `${accentColor}10`
-                                        }}
-                                    >
-                                        {article.category}
-                                    </div>
-                                )}
-
-                                {/* Icon */}
-                                {article.icon && (
-                                    <div
-                                        className="text-3xl"
-                                        style={{
-                                            color: accentColor,
-                                            filter: `drop-shadow(0 0 12px ${accentColor})`
-                                        }}
-                                    >
-                                        {article.icon}
-                                    </div>
-                                )}
-                            </div>
+                        // Compact View
+                        <div className="p-6 bg-gradient-to-br from-black/70 via-black/50 to-black/70">
+                            {/* Icon */}
+                            {article.icon && (
+                                <div
+                                    className="text-4xl mb-4"
+                                    style={{
+                                        color: accentColor,
+                                        filter: `drop-shadow(0 0 16px ${accentColor}80)`
+                                    }}
+                                >
+                                    {article.icon}
+                                </div>
+                            )}
 
                             {/* Title */}
                             <h3
-                                className="text-3xl font-bold mb-4 leading-tight tracking-tight"
+                                className="text-2xl font-bold mb-3 leading-tight tracking-tight"
                                 style={{
-                                    background: `linear-gradient(135deg, ${accentColor}, white)`,
+                                    background: `linear-gradient(135deg, white, ${accentColor}DD)`,
                                     WebkitBackgroundClip: 'text',
                                     WebkitTextFillColor: 'transparent',
                                     backgroundClip: 'text',
@@ -206,45 +189,47 @@ const VisualCodexCard: React.FC<VisualCodexCardProps> = ({
                                 {article.title}
                             </h3>
 
+                            {/* Category Badge */}
+                            {article.category && (
+                                <div
+                                    className="inline-block px-2 py-0.5 mb-3 rounded text-[10px] font-mono uppercase tracking-wider border font-display"
+                                    style={{
+                                        color: accentColor,
+                                        borderColor: `${accentColor}60`,
+                                        background: `${accentColor}15`
+                                    }}
+                                >
+                                    {article.category}
+                                </div>
+                            )}
+
                             {/* Description */}
-                            <p className="text-slate-300 leading-relaxed mb-6 line-clamp-3">
+                            <p className="text-slate-200 text-sm leading-relaxed mb-4 line-clamp-3">
                                 {article.desc}
                             </p>
 
                             {/* Meta Info */}
-                            <div className="flex items-center justify-between pt-4 border-t border-white/5">
-                                {article.date && (
-                                    <span className="text-xs font-mono text-slate-500">
+                            {article.date && (
+                                <div className="pt-3 border-t border-white/10">
+                                    <span className="text-xs font-mono text-slate-400">
                                         {article.date}
                                     </span>
-                                )}
-
-                                {/* Expand Button */}
-                                <div
-                                    className="flex items-center gap-2 text-sm font-mono transition-transform duration-300 font-display"
-                                    style={{
-                                        color: accentColor,
-                                        transform: isHovered ? 'translateX(4px)' : 'translateX(0)'
-                                    }}
-                                >
-                                    <span>READ MORE</span>
-                                    <span>→</span>
                                 </div>
-                            </div>
+                            )}
 
                             {/* Hover Glow Line */}
                             <div
-                                className={`absolute bottom-0 left-0 right-0 h-0.5 transition-all duration-500 ${
+                                className={`absolute bottom-0 left-0 right-0 h-[2px] transition-all duration-500 ${
                                     isHovered ? 'opacity-100' : 'opacity-0'
                                 }`}
                                 style={{
                                     background: `linear-gradient(90deg, transparent, ${accentColor}, transparent)`,
-                                    boxShadow: `0 0 12px ${accentColor}`
+                                    boxShadow: `0 0 16px ${accentColor}`
                                 }}
                             />
                         </div>
                     ) : (
-                        /* Expanded View */
+                        // Expanded View
                         <div
                             ref={contentRef}
                             className="opacity-0 translate-y-5 h-screen overflow-y-auto custom-scrollbar bg-black/70 backdrop-blur-xl"

@@ -75,9 +75,9 @@ const App: React.FC = () => {
             </main>
 
             {/* Footer Status */}
-            <div className="fixed bottom-8 left-8 z-40 text-xs font-mono text-white/20 tracking-wider">
-                <div className="font-display">VIB3CODE v3.0</div>
-                <div style={{ color: activePreset.color }} className="opacity-50 mt-1">
+            <div className="fixed bottom-6 left-6 z-40 text-[10px] font-mono text-white/30 tracking-wider">
+                <div className="font-display text-white/40">VIB3CODE</div>
+                <div style={{ color: activePreset.color }} className="opacity-60 mt-0.5 text-[9px]">
                     {activePreset.title.toUpperCase()}
                 </div>
             </div>
