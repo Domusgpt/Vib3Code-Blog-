@@ -6,7 +6,7 @@
     <title>Vib3 Code | AI & Visual Engineering</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=DM+Sans:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap');
       
       :root {
         --aqua-bright: #4FC3F7;
@@ -18,20 +18,32 @@
       body {
         margin: 0;
         padding: 0;
-        background-color: #020617;
+        background-color: #0a0a0a;
         color: white;
-        font-family: 'Inter', sans-serif;
-        overflow: hidden; /* Disable global scroll */
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        overflow: hidden;
         height: 100vh;
         width: 100vw;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+        font-feature-settings: "liga", "kern";
       }
 
       h1, h2, h3, h4, h5, h6 {
-        font-family: 'DM Sans', sans-serif;
+        font-family: 'Syne', 'DM Sans', sans-serif;
+        font-weight: 800;
+        letter-spacing: -0.04em;
       }
-      
+
       .font-mono {
-        font-family: 'JetBrains Mono', monospace;
+        font-family: 'JetBrains Mono', 'Courier New', monospace;
+        font-feature-settings: "liga" 0, "calt" 1;
+      }
+
+      .font-display {
+        font-family: 'Space Grotesk', 'DM Sans', sans-serif;
+        font-weight: 700;
       }
 
       canvas {
@@ -52,15 +64,28 @@
         perspective: 2000px;
       }
 
-      /* Custom Scrollbar */
+      /* Custom Scrollbar - Enhanced */
       .custom-scrollbar::-webkit-scrollbar {
-        width: 4px;
+        width: 8px;
+        height: 8px;
       }
       .custom-scrollbar::-webkit-scrollbar-track {
-        background: transparent;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 4px;
       }
       .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: rgba(79, 195, 247, 0.3);
+        background: linear-gradient(180deg, rgba(79, 195, 247, 0.6), rgba(123, 63, 242, 0.6));
+        border-radius: 4px;
+        border: 2px solid rgba(0, 0, 0, 0.3);
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(180deg, rgba(79, 195, 247, 0.9), rgba(123, 63, 242, 0.9));
+      }
+
+      /* Smoother text rendering */
+      * {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
 
       /* --- VAPORWAVE / GLITCH FX --- */
@@ -155,7 +180,7 @@
         animation: float-3 15s ease-in-out infinite;
       }
 
-      /* Holographic Effects */
+      /* Holographic Effects - Enhanced */
       @keyframes holographicShine {
         0% { background-position: -200% center; }
         100% { background-position: 200% center; }
@@ -164,16 +189,33 @@
         background: linear-gradient(
           90deg,
           #4FC3F7 0%,
-          #7B3FF2 25%,
-          #F50057 50%,
-          #00E676 75%,
-          #4FC3F7 100%
+          #7B3FF2 20%,
+          #F50057 40%,
+          #00E676 60%,
+          #4FC3F7 80%,
+          #7B3FF2 100%
         );
-        background-size: 200% auto;
+        background-size: 300% auto;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        animation: holographicShine 3s linear infinite;
+        animation: holographicShine 6s linear infinite;
+        filter: drop-shadow(0 0 20px rgba(79, 195, 247, 0.5));
+      }
+
+      /* Glass Morphism */
+      .glass {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .glass-strong {
+        background: rgba(255, 255, 255, 0.06);
+        backdrop-filter: blur(40px) saturate(200%);
+        -webkit-backdrop-filter: blur(40px) saturate(200%);
+        border: 1px solid rgba(255, 255, 255, 0.15);
       }
 
       /* Neon Glow Pulse */

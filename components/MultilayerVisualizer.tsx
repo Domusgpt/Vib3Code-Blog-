@@ -76,26 +76,39 @@ const MultilayerVisualizer = forwardRef<MultilayerVisualizerRef, MultilayerVisua
         useEffect(() => {
             if (!containerRef.current) return;
 
+            console.log('[MultilayerVisualizer] Initializing with params:', baseParams);
+
             // Initialize canvases and shaders for each layer
             LAYER_CONFIGS.forEach((layerConfig, index) => {
                 const canvas = canvasRefs.current[index];
-                if (!canvas) return;
-
-                const gl = canvas.getContext('webgl', {
-                    alpha: true,
-                    premultipliedAlpha: false
-                });
-
-                if (!gl) {
-                    console.error(`WebGL not supported for layer ${layerConfig.role}`);
+                if (!canvas) {
+                    console.warn(`[MultilayerVisualizer] Canvas ${index} not found`);
                     return;
                 }
 
-                // Enable blending for transparency
-                gl.enable(gl.BLEND);
-                gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+                try {
+                    const gl = canvas.getContext('webgl', {
+                        alpha: true,
+                        premultipliedAlpha: false,
+                        preserveDrawingBuffer: false
+                    });
 
-                shadersRef.current[index] = new MultilayerHolographicShader(gl);
+                    if (!gl) {
+                        console.error(`[MultilayerVisualizer] WebGL not supported for layer ${layerConfig.role}`);
+                        return;
+                    }
+
+                    console.log(`[MultilayerVisualizer] Initializing layer ${layerConfig.role}`);
+
+                    // Enable blending for transparency
+                    gl.enable(gl.BLEND);
+                    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+                    shadersRef.current[index] = new MultilayerHolographicShader(gl);
+                    console.log(`[MultilayerVisualizer] Layer ${layerConfig.role} initialized successfully`);
+                } catch (error) {
+                    console.error(`[MultilayerVisualizer] Error initializing layer ${layerConfig.role}:`, error);
+                }
             });
 
             // Handle mouse movement
@@ -141,34 +154,39 @@ const MultilayerVisualizer = forwardRef<MultilayerVisualizerRef, MultilayerVisua
                     const shader = shadersRef.current[index];
                     if (!canvas || !shader) return;
 
-                    const gl = canvas.getContext('webgl');
-                    if (!gl) return;
+                    try {
+                        const gl = canvas.getContext('webgl');
+                        if (!gl) return;
 
-                    // Apply reactivity multiplier to rotation speeds
-                    const reactivity = layerConfig.reactivity;
+                        // Apply reactivity multiplier to rotation speeds
+                        const reactivity = layerConfig.reactivity;
 
-                    const layerUniforms: Partial<ShaderUniforms> = {
-                        ...paramsRef.current,
-                        u_resolution: [canvas.width, canvas.height],
-                        u_time: elapsed * 1000,
-                        u_mouse: mouseRef.current,
-                        u_roleIntensity: reactivity,
-                        // Apply reactivity to rotations
-                        u_rot4dXY: ((paramsRef.current.u_rot4dXY || 0) + elapsed * 0.1) * reactivity,
-                        u_rot4dXZ: ((paramsRef.current.u_rot4dXZ || 0) + elapsed * 0.15) * reactivity,
-                        u_rot4dYZ: ((paramsRef.current.u_rot4dYZ || 0) + elapsed * 0.12) * reactivity,
-                        u_rot4dXW: ((paramsRef.current.u_rot4dXW || 0) + elapsed * 0.08) * reactivity,
-                        u_rot4dYW: ((paramsRef.current.u_rot4dYW || 0) + elapsed * 0.09) * reactivity,
-                        u_rot4dZW: ((paramsRef.current.u_rot4dZW || 0) + elapsed * 0.11) * reactivity,
-                    };
+                        const layerUniforms: Partial<ShaderUniforms> = {
+                            ...paramsRef.current,
+                            u_resolution: [canvas.width, canvas.height],
+                            u_time: elapsed * 1000,
+                            u_mouse: mouseRef.current,
+                            u_roleIntensity: reactivity,
+                            // Apply reactivity to rotations
+                            u_rot4dXY: ((paramsRef.current.u_rot4dXY || 0) + elapsed * 0.1) * reactivity,
+                            u_rot4dXZ: ((paramsRef.current.u_rot4dXZ || 0) + elapsed * 0.15) * reactivity,
+                            u_rot4dYZ: ((paramsRef.current.u_rot4dYZ || 0) + elapsed * 0.12) * reactivity,
+                            u_rot4dXW: ((paramsRef.current.u_rot4dXW || 0) + elapsed * 0.08) * reactivity,
+                            u_rot4dYW: ((paramsRef.current.u_rot4dYW || 0) + elapsed * 0.09) * reactivity,
+                            u_rot4dZW: ((paramsRef.current.u_rot4dZW || 0) + elapsed * 0.11) * reactivity,
+                        };
 
-                    gl.clear(gl.COLOR_BUFFER_BIT);
-                    shader.render(layerUniforms);
+                        gl.clear(gl.COLOR_BUFFER_BIT);
+                        shader.render(layerUniforms);
+                    } catch (error) {
+                        console.error(`[MultilayerVisualizer] Render error for layer ${layerConfig.role}:`, error);
+                    }
                 });
 
                 animationFrameRef.current = requestAnimationFrame(render);
             };
 
+            console.log('[MultilayerVisualizer] Starting render loop');
             render();
 
             return () => {
