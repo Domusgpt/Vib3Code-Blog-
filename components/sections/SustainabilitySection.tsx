@@ -1,5 +1,5 @@
 import React from 'react';
-import ArticleCard from '../ArticleCard';
+import VisualCodexCard from '../VisualCodexCard';
 import { BLOG_CONTENT } from '../../constants';
 import { SectionPreset } from '../../constants/shaderPresets';
 
@@ -10,6 +10,7 @@ interface SectionProps {
 const SustainabilitySection: React.FC<SectionProps> = ({ activePreset }) => {
     const articles = BLOG_CONTENT.sustainability.map((item, i) => ({
         ...item,
+        icon: activePreset.icon,
         category: 'FUTURE',
         date: `Signal ${String(i + 1).padStart(2, '0')}`,
         tags: ['AI', 'Ethics', 'Future', 'Society']
@@ -36,12 +37,14 @@ const SustainabilitySection: React.FC<SectionProps> = ({ activePreset }) => {
             </div>
 
             {/* Articles Grid */}
-            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
                 {articles.map((article, i) => (
-                    <ArticleCard
+                    <VisualCodexCard
                         key={i}
                         article={article}
+                        index={i}
                         accentColor={activePreset.color}
+                        shaderPreset={activePreset.shaderParams}
                     />
                 ))}
             </div>

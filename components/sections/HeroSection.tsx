@@ -1,5 +1,5 @@
 import React from 'react';
-import ArticleCard from '../ArticleCard';
+import VisualCodexCard from '../VisualCodexCard';
 import { BLOG_CONTENT } from '../../constants';
 import { SectionPreset } from '../../constants/shaderPresets';
 
@@ -43,18 +43,21 @@ const HeroSection: React.FC<SectionProps> = ({ activePreset }) => {
                     Featured Articles
                 </h3>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {BLOG_CONTENT.hero.featured.map((post, i) => (
-                        <ArticleCard
+                        <VisualCodexCard
                             key={i}
                             article={{
                                 title: post.title,
                                 desc: post.desc,
+                                icon: activePreset.icon,
                                 category: post.category,
                                 date: post.date,
                                 tags: ['Featured', 'Latest']
                             }}
+                            index={i}
                             accentColor={activePreset.color}
+                            shaderPreset={activePreset.shaderParams}
                         />
                     ))}
                 </div>
