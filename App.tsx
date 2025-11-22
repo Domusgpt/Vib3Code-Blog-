@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import CircularRevolver from './components/CircularRevolver';
+import MultilayerVisualizer, { MultilayerVisualizerRef } from './components/MultilayerVisualizer';
 import { SECTION_PRESETS } from './constants/shaderPresets';
 
 // Section Imports
@@ -24,6 +25,14 @@ const SECTIONS_COMPONENTS = [
 const App: React.FC = () => {
     const [activeSection, setActiveSection] = useState(0);
     const activePreset = SECTION_PRESETS[activeSection];
+    const visualizerRef = useRef<MultilayerVisualizerRef>(null);
+
+    // Update visualizer when section changes
+    useEffect(() => {
+        if (visualizerRef.current && activePreset) {
+            visualizerRef.current.updateParams(activePreset.shaderParams);
+        }
+    }, [activePreset]);
 
     // Debug logging
     useEffect(() => {
@@ -71,9 +80,13 @@ const App: React.FC = () => {
 
     return (
         <div className="relative w-screen h-screen overflow-hidden bg-[#0a0a0a] text-white">
-            {/* Background */}
+            {/* Multilayer Visualizer Background */}
             <div className="fixed inset-0 z-0">
-                <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/80" />
+                <MultilayerVisualizer
+                    ref={visualizerRef}
+                    baseParams={activePreset.shaderParams}
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/50" />
             </div>
 
             {/* Circular Revolver Navigation */}
