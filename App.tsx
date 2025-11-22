@@ -25,6 +25,17 @@ const App: React.FC = () => {
     const [activeSection, setActiveSection] = useState(0);
     const activePreset = SECTION_PRESETS[activeSection];
 
+    // Debug logging
+    useEffect(() => {
+        console.log('VIB3CODE:', {
+            activeSection,
+            preset: activePreset?.title,
+            color: activePreset?.color,
+            componentsCount: SECTIONS_COMPONENTS.length,
+            presetsCount: SECTION_PRESETS.length
+        });
+    }, [activeSection, activePreset]);
+
     // Keyboard navigation
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -42,6 +53,21 @@ const App: React.FC = () => {
     }, [activeSection]);
 
     const ActiveComponent = SECTIONS_COMPONENTS[activeSection];
+
+    // Safety check
+    if (!activePreset || !ActiveComponent) {
+        console.error('FATAL ERROR:', { activeSection, activePreset, ActiveComponent });
+        return (
+            <div className="w-screen h-screen flex items-center justify-center bg-red-900 text-white p-8">
+                <div className="text-center max-w-md">
+                    <h1 className="text-6xl font-bold mb-4">⚠</h1>
+                    <h2 className="text-2xl font-bold mb-2">INIT FAILURE</h2>
+                    <p className="text-sm opacity-75">Section index: {activeSection}</p>
+                    <p className="text-sm opacity-75">Missing: {!activePreset ? 'preset' : 'component'}</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="relative w-screen h-screen overflow-hidden bg-[#0a0a0a] text-white">

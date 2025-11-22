@@ -39,7 +39,7 @@ const CircularRevolver: React.FC<CircularRevolverProps> = ({
                 {/* Section Dots */}
                 <div
                     ref={revolverRef}
-                    className="absolute inset-0"
+                    className="absolute inset-0 transition-transform duration-500 ease-out"
                     style={{ transform: `rotate(${rotation}deg)` }}
                 >
                     {sections.map((section, index) => {
