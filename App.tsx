@@ -1,8 +1,6 @@
 
-import React, { useEffect, useRef, useState } from 'react';
-import gsap from 'gsap';
+import React, { useEffect, useState } from 'react';
 import CircularRevolver from './components/CircularRevolver';
-import MultilayerVisualizer, { MultilayerVisualizerRef } from './components/MultilayerVisualizer';
 import { SECTION_PRESETS } from './constants/shaderPresets';
 
 // Section Imports
@@ -25,25 +23,6 @@ const SECTIONS_COMPONENTS = [
 const App: React.FC = () => {
     const [activeSection, setActiveSection] = useState(0);
     const activePreset = SECTION_PRESETS[activeSection];
-    const visualizerRef = useRef<MultilayerVisualizerRef>(null);
-
-    // Update visualizer when section changes
-    useEffect(() => {
-        if (visualizerRef.current && activePreset) {
-            visualizerRef.current.updateParams(activePreset.shaderParams);
-        }
-    }, [activePreset]);
-
-    // Debug logging
-    useEffect(() => {
-        console.log('VIB3CODE:', {
-            activeSection,
-            preset: activePreset?.title,
-            color: activePreset?.color,
-            componentsCount: SECTIONS_COMPONENTS.length,
-            presetsCount: SECTION_PRESETS.length
-        });
-    }, [activeSection, activePreset]);
 
     // Keyboard navigation
     useEffect(() => {
@@ -63,30 +42,35 @@ const App: React.FC = () => {
 
     const ActiveComponent = SECTIONS_COMPONENTS[activeSection];
 
-    // Safety check
-    if (!activePreset || !ActiveComponent) {
-        console.error('FATAL ERROR:', { activeSection, activePreset, ActiveComponent });
-        return (
-            <div className="w-screen h-screen flex items-center justify-center bg-red-900 text-white p-8">
-                <div className="text-center max-w-md">
-                    <h1 className="text-6xl font-bold mb-4">⚠</h1>
-                    <h2 className="text-2xl font-bold mb-2">INIT FAILURE</h2>
-                    <p className="text-sm opacity-75">Section index: {activeSection}</p>
-                    <p className="text-sm opacity-75">Missing: {!activePreset ? 'preset' : 'component'}</p>
-                </div>
-            </div>
-        );
-    }
-
     return (
         <div className="relative w-screen h-screen overflow-hidden bg-[#0a0a0a] text-white">
-            {/* Multilayer Visualizer Background */}
+            {/* Animated Background */}
             <div className="fixed inset-0 z-0">
-                <MultilayerVisualizer
-                    ref={visualizerRef}
-                    baseParams={activePreset.shaderParams}
+                {/* Gradient Orbs */}
+                <div
+                    className="absolute top-0 left-0 w-[800px] h-[800px] rounded-full blur-[128px] opacity-20 animate-float-slow"
+                    style={{ background: activePreset.color }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/50" />
+                <div
+                    className="absolute bottom-0 right-0 w-[600px] h-[600px] rounded-full blur-[128px] opacity-15 animate-float-slower"
+                    style={{ background: `linear-gradient(135deg, ${activePreset.color}, transparent)` }}
+                />
+                <div
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full blur-[96px] opacity-10 animate-pulse-slow"
+                    style={{ background: activePreset.color }}
+                />
+
+                {/* Noise Texture */}
+                <div
+                    className="absolute inset-0 opacity-[0.03] mix-blend-overlay"
+                    style={{
+                        backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' /%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\'/%3E%3C/svg%3E")',
+                        backgroundSize: '128px'
+                    }}
+                />
+
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
             </div>
 
             {/* Circular Revolver Navigation */}
@@ -103,11 +87,35 @@ const App: React.FC = () => {
 
             {/* Footer Status */}
             <div className="fixed bottom-8 left-8 z-40 text-xs font-mono text-white/20 tracking-wider">
-                <div>VIB3CODE v2.0</div>
-                <div style={{ color: activePreset.color }} className="opacity-50">
+                <div className="font-display">VIB3CODE v3.0</div>
+                <div style={{ color: activePreset.color }} className="opacity-50 mt-1">
                     {activePreset.title.toUpperCase()}
                 </div>
             </div>
+
+            <style>{`
+                @keyframes float-slow {
+                    0%, 100% { transform: translate(0, 0); }
+                    50% { transform: translate(-50px, -80px); }
+                }
+                @keyframes float-slower {
+                    0%, 100% { transform: translate(0, 0); }
+                    50% { transform: translate(40px, 60px); }
+                }
+                @keyframes pulse-slow {
+                    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.1; }
+                    50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.15; }
+                }
+                .animate-float-slow {
+                    animation: float-slow 20s ease-in-out infinite;
+                }
+                .animate-float-slower {
+                    animation: float-slower 25s ease-in-out infinite;
+                }
+                .animate-pulse-slow {
+                    animation: pulse-slow 15s ease-in-out infinite;
+                }
+            `}</style>
         </div>
     );
 };
