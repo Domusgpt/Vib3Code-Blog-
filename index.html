@@ -6,7 +6,7 @@
     <title>Vib3 Code | AI & Visual Engineering</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=DM+Sans:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap');
       
       :root {
         --aqua-bright: #4FC3F7;
@@ -18,20 +18,32 @@
       body {
         margin: 0;
         padding: 0;
-        background-color: #020617;
+        background-color: #0a0a0a;
         color: white;
-        font-family: 'Inter', sans-serif;
-        overflow: hidden; /* Disable global scroll */
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        overflow: hidden;
         height: 100vh;
         width: 100vw;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+        font-feature-settings: "liga", "kern";
       }
 
       h1, h2, h3, h4, h5, h6 {
-        font-family: 'DM Sans', sans-serif;
+        font-family: 'Syne', 'DM Sans', sans-serif;
+        font-weight: 800;
+        letter-spacing: -0.04em;
       }
-      
+
       .font-mono {
-        font-family: 'JetBrains Mono', monospace;
+        font-family: 'JetBrains Mono', 'Courier New', monospace;
+        font-feature-settings: "liga" 0, "calt" 1;
+      }
+
+      .font-display {
+        font-family: 'Space Grotesk', 'DM Sans', sans-serif;
+        font-weight: 700;
       }
 
       canvas {
@@ -52,15 +64,28 @@
         perspective: 2000px;
       }
 
-      /* Custom Scrollbar */
+      /* Custom Scrollbar - Enhanced */
       .custom-scrollbar::-webkit-scrollbar {
-        width: 4px;
+        width: 8px;
+        height: 8px;
       }
       .custom-scrollbar::-webkit-scrollbar-track {
-        background: transparent;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 4px;
       }
       .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: rgba(79, 195, 247, 0.3);
+        background: linear-gradient(180deg, rgba(79, 195, 247, 0.6), rgba(123, 63, 242, 0.6));
+        border-radius: 4px;
+        border: 2px solid rgba(0, 0, 0, 0.3);
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(180deg, rgba(79, 195, 247, 0.9), rgba(123, 63, 242, 0.9));
+      }
+
+      /* Smoother text rendering */
+      * {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
 
       /* --- VAPORWAVE / GLITCH FX --- */
@@ -129,6 +154,175 @@
         mix-blend-mode: hard-light;
       }
 
+      /* Floating Animations */
+      @keyframes float-1 {
+        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+        25% { transform: translate(20px, -30px) rotate(5deg); }
+        50% { transform: translate(-10px, -50px) rotate(-3deg); }
+        75% { transform: translate(15px, -20px) rotate(2deg); }
+      }
+      @keyframes float-2 {
+        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+        33% { transform: translate(-25px, 40px) rotate(-7deg); }
+        66% { transform: translate(30px, 20px) rotate(4deg); }
+      }
+      @keyframes float-3 {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        50% { transform: translate(15px, -15px) scale(1.1); }
+      }
+      .animate-float-1 {
+        animation: float-1 20s ease-in-out infinite;
+      }
+      .animate-float-2 {
+        animation: float-2 25s ease-in-out infinite;
+      }
+      .animate-float-3 {
+        animation: float-3 15s ease-in-out infinite;
+      }
+
+      /* Holographic Effects - Enhanced */
+      @keyframes holographicShine {
+        0% { background-position: -200% center; }
+        100% { background-position: 200% center; }
+      }
+      .holographic-text {
+        background: linear-gradient(
+          90deg,
+          #4FC3F7 0%,
+          #7B3FF2 20%,
+          #F50057 40%,
+          #00E676 60%,
+          #4FC3F7 80%,
+          #7B3FF2 100%
+        );
+        background-size: 300% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: holographicShine 6s linear infinite;
+        filter: drop-shadow(0 0 20px rgba(79, 195, 247, 0.5));
+      }
+
+      /* Glass Morphism */
+      .glass {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .glass-strong {
+        background: rgba(255, 255, 255, 0.06);
+        backdrop-filter: blur(40px) saturate(200%);
+        -webkit-backdrop-filter: blur(40px) saturate(200%);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+
+      /* Neon Glow Pulse */
+      @keyframes neonPulse {
+        0%, 100% {
+          box-shadow: 0 0 5px currentColor,
+                      0 0 10px currentColor,
+                      0 0 20px currentColor;
+        }
+        50% {
+          box-shadow: 0 0 10px currentColor,
+                      0 0 20px currentColor,
+                      0 0 40px currentColor,
+                      0 0 60px currentColor;
+        }
+      }
+      .neon-glow {
+        animation: neonPulse 2s ease-in-out infinite;
+      }
+
+      /* Chromatic Aberration */
+      .chromatic-text {
+        position: relative;
+        display: inline-block;
+      }
+      .chromatic-text::before,
+      .chromatic-text::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0.8;
+      }
+      .chromatic-text::before {
+        color: #00ffff;
+        transform: translate(-2px, 0);
+        animation: chromaShift1 1s ease-in-out infinite;
+      }
+      .chromatic-text::after {
+        color: #ff00ff;
+        transform: translate(2px, 0);
+        animation: chromaShift2 1s ease-in-out infinite;
+      }
+      @keyframes chromaShift1 {
+        0%, 100% { transform: translate(-2px, 0); }
+        50% { transform: translate(-3px, 1px); }
+      }
+      @keyframes chromaShift2 {
+        0%, 100% { transform: translate(2px, 0); }
+        50% { transform: translate(3px, -1px); }
+      }
+
+      /* Grid Lines Background */
+      .cyber-grid {
+        background-image:
+          linear-gradient(rgba(79, 195, 247, 0.1) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(79, 195, 247, 0.1) 1px, transparent 1px);
+        background-size: 50px 50px;
+        animation: gridScroll 20s linear infinite;
+      }
+      @keyframes gridScroll {
+        0% { background-position: 0 0; }
+        100% { background-position: 50px 50px; }
+      }
+
+      /* Shimmer Effect */
+      @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+      }
+      .shimmer-effect::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.1),
+          transparent
+        );
+        animation: shimmer 3s infinite;
+      }
+
+      /* Particle Dots */
+      .particle-bg {
+        background-image: radial-gradient(circle, rgba(79, 195, 247, 0.2) 1px, transparent 1px);
+        background-size: 30px 30px;
+        animation: particleFloat 10s linear infinite;
+      }
+      @keyframes particleFloat {
+        0% { background-position: 0 0; }
+        100% { background-position: 30px 30px; }
+      }
+
+      /* Data Stream Effect */
+      @keyframes dataStream {
+        0% { transform: translateY(-100%); opacity: 0; }
+        50% { opacity: 1; }
+        100% { transform: translateY(100%); opacity: 0; }
+      }
+      .data-stream {
+        animation: dataStream 2s linear infinite;
+      }
+
     </style>
     <script type="importmap">
       {
@@ -145,5 +339,6 @@
   </head>
   <body>
     <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
   </body>
 </html>
